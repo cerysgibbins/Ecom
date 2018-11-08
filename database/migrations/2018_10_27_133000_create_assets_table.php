@@ -15,9 +15,9 @@ class CreateAssetsTable extends Migration
     {
         Schema::create('assets', function (Blueprint $table) {
             $table->increments('id');
-            $table->string('type');
+            $table->integer('type');
             $table->text('file_name');
-            $table->increments('product_id');
+            $table->integer('product_id')->unsigned();
             $table->timestamps();
         });
     }
