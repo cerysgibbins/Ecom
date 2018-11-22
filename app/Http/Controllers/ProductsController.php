@@ -57,4 +57,24 @@ class ProductsController
             'product' => $product
         ]);
     }
+
+    /**
+     * @param integer $id
+     * @return Response
+     */
+    public function getProduct($id)
+    {
+        $product = $this->productModel->find($id);
+
+        if ($product === null) {
+            return $this->response->json([
+                'status' => 'failed'
+            ]);
+        }
+
+        return $this->response->json([
+            'status' => 'succeeded',
+            'product' => $product
+        ]);
+    }
 }
