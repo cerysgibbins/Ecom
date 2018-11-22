@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Product;
 use App\Validators\ProductValidator;
+use App\Transformers\ProductTransformer;
 use Illuminate\Routing\ResponseFactory as Response;
 
 class ProductsController 
@@ -15,18 +16,23 @@ class ProductsController
     /** @var ProductValidator */
     private $productValidator;
 
+    /** @var ProductTransformer */
+    private $productTransformer;
+
     /** @var Response */
     private $response;
 
     /**
      * @param Product $productModel
      * @param ProductValidator $productValidator
+     * @param ProductTransformer $productTransformer
      * @param Response $response
      */
-    public function __construct(Product $productModel, ProductValidator $productValidator, Response $response)
+    public function __construct(Product $productModel, ProductValidator $productValidator, Response $response, ProductTransformer $productTransformer)
     {
         $this->productModel = $productModel;
         $this->productValidator = $productValidator;
+        $this->productTransformer = $productTransformer;
         $this->response = $response;
     }
 
@@ -41,14 +47,13 @@ class ProductsController
             return $this->response->view('failed');
         }
 
-        $this->productModel->create($requestData);
-        /*
-        1: Validate data
-        2: Transform data
-        3: Push data to the database
-        4: Return new created object
-        */
+        $requestData = $this->productTransformer->transform($requestData);
 
-        return $this->response->json(['status' => 'succeeded']);
+        $product = $this->productModel->create($requestData);
+
+        return $this->response->json([
+            'status' => 'succeeded',
+            'product' => $product
+        ]);
     }
 }
