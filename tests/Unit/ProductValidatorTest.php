@@ -24,7 +24,7 @@ class ProductValidatorTest extends TestCase
         $this->validator = new ProductValidator($this->validatorMock);
     }
 
-    public function testProductNameCannotBeBlank()
+    public function testValidatorReturnsFalseOnFailedValidation()
     {
         $dataToValidate = [
             'name' => '', 
@@ -38,5 +38,21 @@ class ProductValidatorTest extends TestCase
             ->will($this->returnValue(false));
 
         $this->assertFalse($this->validator->validate($dataToValidate));
+    }
+
+    public function testValidatorReturnsTrueOnSuccessfulValidation()
+    {
+        $dataToValidate = [
+            'name' => 'test', 
+            'code' => '1000',
+            'price_in_pence' => 1
+        ];
+
+        $this->validatorMock->expects($this->once())
+            ->method('validate')
+            ->with($dataToValidate)
+            ->will($this->returnValue(true));
+
+        $this->assertTrue($this->validator->validate($dataToValidate));
     }
 }
