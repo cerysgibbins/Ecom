@@ -38,6 +38,7 @@ class ProductsController
 
     /**
      * @param Request $request
+     * @return Response
      */
     public function addProduct(Request $request) 
     {

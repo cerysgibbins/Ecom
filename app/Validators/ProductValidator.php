@@ -9,11 +9,18 @@ class ProductValidator
     /** @var Validator */
     private $validator;
 
+    /**
+     * @param Validator $validator
+     */
     public function __construct(Validator $validator)
     {
         $this->validator = $validator;
     }
 
+    /**
+     * @param array $productData
+     * @return boolean
+     */
     public function validate($productData)
     {
         return $this->validator->validate($productData, [
