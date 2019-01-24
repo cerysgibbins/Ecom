@@ -36,6 +36,12 @@ class ProductsController
         $this->response = $response;
     }
 
+    public function index()
+    {
+        return $this->response->view('add-product');
+    }
+
+
     /**
      * @param Request $request
      * @return Response
