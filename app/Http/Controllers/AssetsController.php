@@ -8,7 +8,6 @@ use App\Validators\AssetValidator;
 use App\Transformers\AssetTransformer;
 use Illuminate\Routing\ResponseFactory as Response;
 
-
 class AssetsController 
 {
     /** @var Asset */

@@ -12,4 +12,9 @@ class Product extends Model
         'code',
         'price_in_pence',
     ];
+
+    function assets()
+    {
+        return $this->hasMany(Asset::class);
+    }
 }

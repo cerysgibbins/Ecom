@@ -64,7 +64,7 @@ class ProductsController
      */
     public function getProduct($id)
     {
-        $product = $this->productModel->find($id);
+        $product = $this->productModel->with('assets')->find($id);
 
         if ($product === null) {
             return $this->response->json([
