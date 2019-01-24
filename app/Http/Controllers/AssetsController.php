@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 use App\Asset;
 use App\Validators\AssetValidator;
-use App\Transformers\Assetransformer;
+use App\Transformers\AssetTransformer;
 use Illuminate\Routing\ResponseFactory as Response;
 
 class AssetsController 
@@ -26,8 +26,7 @@ class AssetsController
     * @param AssetTransformer $assetTransformer
     * @param Response $response
     */
-
-    public function __construct(Asset $assetModel, AssetValidator $assetValidator, Response $response, Assetransformer $assetTransformer)
+    public function __construct(Asset $assetModel, AssetValidator $assetValidator, Response $response, AssetTransformer $assetTransformer)
     {
         $this->assetModel = $assetModel;
         $this->assetValidator = $assetValidator;
@@ -76,5 +75,4 @@ class AssetsController
             'asset' => $asset
         ]);
     }
-
 }
