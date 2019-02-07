@@ -3,37 +3,31 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Asset;
-use App\Validators\AssetValidator;
 use App\Transformers\AssetTransformer;
 use Illuminate\Routing\ResponseFactory as Response;
+use App\Repositories\AssetsRepository;
 
 class AssetsController 
-{
-    /** @var Asset */
-    private $assetModel;
-
-    /** @var AssetValidator */
-    private $assetValidator;
-    
+{    
     /** @var AssetTransformer */
     private $assetransformer;
     
     /** @var Response */
     private $response;
     
+    /** @var AssetsRepository */
+    private $assetsRepository;
+
     /**
-    * @param Asset $assetModel
-    * @param AssetValidator $assetValidator
     * @param AssetTransformer $assetTransformer
     * @param Response $response
+    * @param AssetsRepository $assetsRepository
     */
-    public function __construct(Asset $assetModel, AssetValidator $assetValidator, Response $response, AssetTransformer $assetTransformer)
+    public function __construct(Response $response, AssetTransformer $assetTransformer, AssetsRepository $assetsRepository)
     {
-        $this->assetModel = $assetModel;
-        $this->assetValidator = $assetValidator;
         $this->assetTransformer = $assetTransformer;
         $this->response = $response;
+        $this->assetsRepository = $assetsRepository;
     }
 
     /**
@@ -44,13 +38,25 @@ class AssetsController
     {
         $requestData = $request->all();
 
-        if ($this->assetValidator->validate($requestData) === false) {
-            return $this->response->view('failed');
-        }
-
         $requestData = $this->assetTransformer->transform($requestData);
 
-        $asset = $this->assetModel->create($requestData);
+        if (!file_exists(env('UPLOAD_DIRECTORY') . $requestData['file_name'])) {
+            return $this->response->json([
+                'status' => 'failed'
+            ]);
+        }
+        
+        $asset = $this->assetsRepository->addNew(
+            $requestData['type'], 
+            $requestData['file_name'], 
+            $requestData['product_id']
+        );
+
+        if ($asset === null) {
+            return $this->response->json([
+                'status' => 'failed'
+            ]);
+        }
 
         return $this->response->json([
             'status' => 'succeeded',
@@ -64,7 +70,7 @@ class AssetsController
      */
     public function getAsset($id)
     {
-        $asset = $this->assetModel->find($id);
+        $asset = $this->assetsRepository->getAssetById($id);
 
         if ($asset === null) {
             return $this->response->json([

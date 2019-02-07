@@ -4,9 +4,11 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Product;
+use App\Asset;
 use App\Validators\ProductValidator;
 use App\Transformers\ProductTransformer;
 use Illuminate\Routing\ResponseFactory as Response;
+use App\Repositories\AssetsRepository;
 
 class ProductsController 
 {
@@ -22,18 +24,23 @@ class ProductsController
     /** @var Response */
     private $response;
 
+    /** @var AssetsRepository */
+    private $assetsRepository;
+
     /**
      * @param Product $productModel
      * @param ProductValidator $productValidator
      * @param ProductTransformer $productTransformer
      * @param Response $response
+     * @param AssetsRepository $assetsRepository
      */
-    public function __construct(Product $productModel, ProductValidator $productValidator, Response $response, ProductTransformer $productTransformer)
+    public function __construct(Product $productModel, ProductValidator $productValidator, Response $response, ProductTransformer $productTransformer, AssetsRepository $assetsRepository)
     {
         $this->productModel = $productModel;
         $this->productValidator = $productValidator;
         $this->productTransformer = $productTransformer;
         $this->response = $response;
+        $this->assetsRepository = $assetsRepository;
     }
 
     public function index()
@@ -57,6 +64,16 @@ class ProductsController
         $requestData = $this->productTransformer->transform($requestData);
 
         $product = $this->productModel->create($requestData);
+
+        if (isset($requestData['assets'])) {
+            foreach($requestData['assets'] as $asset) {
+                $this->assetsRepository->addNew(
+                    Asset::TYPE_IMAGE,
+                    $asset,
+                    $product['id']
+                );
+            }
+        }
 
         return $this->response->json([
             'status' => 'succeeded',

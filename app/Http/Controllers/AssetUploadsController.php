@@ -20,5 +20,10 @@ class AssetUploadsController
         $newFileName = uniqid() . '.' . $request->file('file')->getClientOriginalExtension();
 
         $request->file('file')->move(env('UPLOAD_DIRECTORY'), $newFileName);
+
+        return $response->json([
+            'status' => 'succeeded',
+            'file' => $newFileName
+        ]);
     }
 }
